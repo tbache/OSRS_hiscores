@@ -1,8 +1,8 @@
 """
-Script that obtains data from OSRS hiscores and displays interesting
+Script that obtains a players data from OSRS hiscores and displays interesting
 information.
 
-Created on Thu Apr 14 11:16:50 2022
+Created on 14 April 2022
 @author: Tom Bache
 """
 
@@ -13,7 +13,17 @@ import pandas as pd
 from urllib.request import Request, urlopen
 
 
-def FormatHiscoresDataFrame(df):
+def CleanHiscoresDataFrame(df):
+    """
+    Cleans dataframe read from hiscores website to make it human readable.
+    Parameters
+    ----------
+    df : Pandas dataframe to be cleaned.
+
+    Returns
+    -------
+    df : Cleaned pandas dataframe.
+    """
     cols = df.iloc[1][1:]  # Extract correct column names (ignore first)
     df.drop([0, 1, 2], inplace=True)  # Drop unnecessary rows
     df.drop([0], axis=1, inplace=True)  # Drop duplicated column
@@ -40,6 +50,6 @@ if __name__ == '__main__':
     hiscores = pd.read_html(webpage)[2]
 
     # Format dataframe
-    hiscores = FormatHiscoresDataFrame(hiscores)
+    hiscores = CleanHiscoresDataFrame(hiscores)
 
     print(hiscores)
