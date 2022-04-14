@@ -9,7 +9,7 @@ Created on Thu Apr 14 11:16:50 2022
 import argparse
 import pandas as pd
 
-# Required when running in some IDEs
+# Required when running in some IDEs (e.g. Spyder)
 from urllib.request import Request, urlopen
 
 
