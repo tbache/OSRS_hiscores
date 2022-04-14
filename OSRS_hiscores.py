@@ -5,6 +5,13 @@ information.
 Created on 14 April 2022
 @author: Tom Bache
 """
+import argparse
+from os.path import exists
+import pandas as pd
+from datetime import datetime
+import numpy as np
+# Required when running in some IDEs (e.g. Spyder)
+from urllib.request import Request, urlopen
 
 """
 TODO
@@ -13,14 +20,6 @@ TODO
 """
 
 
-
-
-import argparse
-from os.path import exists
-import pandas as pd
-from datetime import date
-import numpy as np
-from urllib.request import Request, urlopen  # Required when running in some IDEs (e.g. Spyder)
 def CleanHiscoresDataFrame(df):
     """
     Cleans dataframe read from hiscores website to make it human readable.
@@ -45,7 +44,7 @@ def CleanHiscoresDataFrame(df):
     # Remove unnecessary row
     df.drop('Minigame', inplace=True)
     # Create multiindex using todays date and skill name
-    index = [(date.today(), i) for i in hiscores.index]
+    index = [(datetime.now(), i) for i in hiscores.index]
     df.index = pd.MultiIndex.from_tuples(index, names=('Date', 'Skill'))
     df = df.astype(np.int64)
     return df
@@ -64,11 +63,12 @@ if __name__ == '__main__':
     player = str(args.player)
 
     # Read csv file for this player and format it
+    PlayerFileExists = False
     if exists(player+'-hiscores.csv'):
+        PlayerFileExists = True
         hiscores_all_time = pd.read_csv(
             player+'-hiscores.csv', parse_dates=[0],
             names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
-        print(hiscores_all_time)
         hiscores_all_time.set_index(['Date', 'Skill'], inplace=True)
         # Change datetime to date only
         hiscores_all_time.index = hiscores_all_time.index.set_levels(
@@ -84,20 +84,6 @@ if __name__ == '__main__':
     # Clean dataframe
     hiscores = CleanHiscoresDataFrame(hiscores)
 
-    # Get unique dates present in csv file
-    dates = list(set([d for (d, s) in hiscores_all_time.index]))
-    print(dates)
-    print(hiscores.loc[dates[0]])
-    print(hiscores_all_time.loc[dates[0]])
-    # Check if current stats are already present in csv file
-    # Ignore rank column for now
-    StatUpdateNeeded = True
-    for d in dates:
-        if hiscores.drop('Rank', axis=1).loc[d].equals(hiscores_all_time.drop('Rank', axis=1).loc[d]):
-            print("No difference in stats since last update.")
-            StatUpdateNeeded = False
-
-    if StatUpdateNeeded:
-        # Save current hiscores to CSV file
-        print("Saving current stats.")
-        hiscores.to_csv(player+'-hiscores.csv', mode='a', header=False)
+    # Save current hiscores to csv file
+    print("Saving current stats to CSV file:", player+'-hiscores.csv')
+    hiscores.to_csv(player+'-hiscores.csv', mode='a', header=False)
