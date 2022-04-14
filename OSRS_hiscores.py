@@ -7,10 +7,11 @@ Created on 14 April 2022
 """
 import argparse
 from os.path import exists
+import sys
 import pandas as pd
 from datetime import datetime
 import numpy as np
-# Required when running in some IDEs (e.g. Spyder)
+# Required when running in some IDEs (e.g. Spyder):
 from urllib.request import Request, urlopen
 
 """
@@ -55,7 +56,7 @@ if __name__ == '__main__':
     # Parse CL arguments
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--player', nargs=1, default='ioniph',
+        '--player', default='ioniph',
         help='Name of the player whose stats are to be fetched.')
     args = parser.parse_args()
 
@@ -76,9 +77,12 @@ if __name__ == '__main__':
              hiscores_all_time.index.levels[1]])
 
     # Read players current stats from OSRS hiscores
-    req = Request('https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1='+player,
-                  headers={'User-Agent': 'Mozilla/5.0'})
+    page_name = 'https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1='+player
+    req = Request(page_name, headers={'User-Agent': 'Mozilla/5.0'})
     webpage = urlopen(req).read()
+    if "No player" in str(webpage):
+        print("No player with name %s found. Exiting..." % (player))
+        sys.exit()
     hiscores = pd.read_html(webpage)[2]
 
     # Clean dataframe
