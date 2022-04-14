@@ -8,6 +8,7 @@ Created on 14 April 2022
 
 import argparse
 import pandas as pd
+from datetime import date
 
 # Required when running in some IDEs (e.g. Spyder)
 from urllib.request import Request, urlopen
@@ -16,6 +17,8 @@ from urllib.request import Request, urlopen
 def CleanHiscoresDataFrame(df):
     """
     Cleans dataframe read from hiscores website to make it human readable.
+    Sets todays date and skill name as multiindex for writing to csv later.
+
     Parameters
     ----------
     df : Pandas dataframe to be cleaned.
@@ -24,12 +27,19 @@ def CleanHiscoresDataFrame(df):
     -------
     df : Cleaned pandas dataframe.
     """
-    cols = df.iloc[1][1:]  # Extract correct column names (ignore first)
-    df.drop([0, 1, 2], inplace=True)  # Drop unnecessary rows
-    df.drop([0], axis=1, inplace=True)  # Drop duplicated column
+    # Save correct column names
+    cols = df.iloc[1][1:]
+    # Drop unnecessary rows and columns
+    df.drop([0, 1, 2], inplace=True)
+    df.drop([0], axis=1, inplace=True)
+    # Set column names and index
     df.columns = cols
     df.set_index('Skill', inplace=True)
-    df.drop('Minigame', inplace=True)  # Remove unnecessary row
+    # Remove unnecessary row
+    df.drop('Minigame', inplace=True)
+    # Create multiindex using todays date and skill name
+    index = [(date.today(), i) for i in hiscores.index]
+    df.index = pd.MultiIndex.from_tuples(index, names=('Date', 'Skill'))
     return df
 
 
@@ -49,7 +59,7 @@ if __name__ == '__main__':
     webpage = urlopen(req).read()
     hiscores = pd.read_html(webpage)[2]
 
-    # Format dataframe
+    # Clean dataframe
     hiscores = CleanHiscoresDataFrame(hiscores)
 
     print(hiscores)
