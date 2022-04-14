@@ -13,6 +13,16 @@ import pandas as pd
 from urllib.request import Request, urlopen
 
 
+def FormatHiscoresDataFrame(df):
+    cols = df.iloc[1][1:]  # Extract correct column names (ignore first)
+    df.drop([0, 1, 2], inplace=True)  # Drop unnecessary rows
+    df.drop([0], axis=1, inplace=True)  # Drop duplicated column
+    df.columns = cols
+    df.set_index('Skill', inplace=True)
+    df.drop('Minigame', inplace=True)  # Remove unnecessary row
+    return df
+
+
 if __name__ == '__main__':
 
     # Parse CL arguments
@@ -27,5 +37,9 @@ if __name__ == '__main__':
     req = Request('https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1='+player,
                   headers={'User-Agent': 'Mozilla/5.0'})
     webpage = urlopen(req).read()
-    hiscores = pd.read_html(webpage)
+    hiscores = pd.read_html(webpage)[2]
+
+    # Format dataframe
+    hiscores = FormatHiscoresDataFrame(hiscores)
+
     print(hiscores)
