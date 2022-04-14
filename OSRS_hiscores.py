@@ -63,19 +63,6 @@ if __name__ == '__main__':
     # Set player name
     player = str(args.player)
 
-    # Read csv file for this player and format it
-    PlayerFileExists = False
-    if exists(player+'-hiscores.csv'):
-        PlayerFileExists = True
-        hiscores_all_time = pd.read_csv(
-            player+'-hiscores.csv', parse_dates=[0],
-            names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
-        hiscores_all_time.set_index(['Date', 'Skill'], inplace=True)
-        # Change datetime to date only
-        hiscores_all_time.index = hiscores_all_time.index.set_levels(
-            [pd.to_datetime(hiscores_all_time.index.levels[0], format='%Y-%m-%d'),
-             hiscores_all_time.index.levels[1]])
-
     # Read players current stats from OSRS hiscores
     page_name = 'https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1='+player
     req = Request(page_name, headers={'User-Agent': 'Mozilla/5.0'})
@@ -91,3 +78,18 @@ if __name__ == '__main__':
     # Save current hiscores to csv file
     print("Saving current stats to CSV file:", player+'-hiscores.csv')
     hiscores.to_csv(player+'-hiscores.csv', mode='a', header=False)
+
+    # Read csv file for this player and format it
+    if exists(player+'-hiscores.csv'):
+        hiscores_all_time = pd.read_csv(
+            player+'-hiscores.csv', parse_dates=[0],
+            names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
+        hiscores_all_time.set_index(['Date', 'Skill'], inplace=True)
+        # Change datetime to date only
+        # hiscores_all_time.index = hiscores_all_time.index.set_levels(
+        #     [pd.to_datetime(hiscores_all_time.index.levels[0], format='%Y-%m-%d'),
+        #      hiscores_all_time.index.levels[1]])
+    else:
+        hiscores_all_time = hiscores
+
+    print(hiscores_all_time)
