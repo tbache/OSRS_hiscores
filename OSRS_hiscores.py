@@ -18,12 +18,6 @@ from urllib.request import Request, urlopen
 
 plt.style.use('ggplot')
 
-"""
-TODO
-- Read default player name from config file
-- Create script that runs this script once per day
-"""
-
 
 def CleanHiscoresDataFrame(df):
     """

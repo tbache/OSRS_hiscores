@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Created on Thu Apr 14 11:19:06 2022
 
@@ -6,3 +5,8 @@ Created on Thu Apr 14 11:19:06 2022
 """
 
 README for OSRS_hiscores repository.
+
+TODO
+- Update README
+- Read default player name from config file
+- Create script that runs this script once per day
