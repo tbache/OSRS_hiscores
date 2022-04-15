@@ -11,8 +11,12 @@ import sys
 import pandas as pd
 from datetime import datetime
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 # Required when running in some IDEs (e.g. Spyder):
 from urllib.request import Request, urlopen
+
+plt.style.use('ggplot')
 
 """
 TODO
@@ -88,12 +92,19 @@ if __name__ == '__main__':
         hiscores_all_time = pd.read_csv(
             player+'-hiscores.csv', parse_dates=[0],
             names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
-        hiscores_all_time.set_index(['Date', 'Skill'], inplace=True)
-        # Change datetime to date only
-        # hiscores_all_time.index = hiscores_all_time.index.set_levels(
-        #     [pd.to_datetime(hiscores_all_time.index.levels[0], format='%Y-%m-%d'),
-        #      hiscores_all_time.index.levels[1]])
+        # hiscores_all_time.set_index(['Date', 'Skill'], inplace=True)
     else:
         hiscores_all_time = hiscores
 
     print(hiscores_all_time)
+
+    # Change datetime to date for nice axis labels
+    hiscores_all_time['Date'] = pd.to_datetime(
+        hiscores_all_time['Date']).dt.date
+
+    # Plot all skills
+    g = sns.FacetGrid(data=hiscores_all_time, col='Skill', col_wrap=5,
+                      sharey=False)
+    g.map(sns.lineplot, 'Date', 'XP')
+    for axes in g.axes.flat:
+        _ = axes.set_xticklabels(axes.get_xticklabels(), rotation=90)
