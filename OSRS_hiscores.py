@@ -125,13 +125,21 @@ if __name__ == '__main__':
     # print(killcount)
 
     # Plot skills
-    skills_plot = sns.FacetGrid(data=skills, col='Skill', col_wrap=6,
-                                sharey=False)
+    skills_plot = sns.FacetGrid(data=skills, col='Skill', col_wrap=4,
+                                sharey=False, height=3.5, aspect=1.5)
     skills_plot.map(sns.lineplot, 'Date', 'XP')
+    for ax, (_, subdata) in zip(skills_plot.axes, skills.groupby('Skill', sort=False)):
+        ax2 = ax.twinx()
+        subdata.plot(x='Date', y='Level', ax=ax2, legend=False, color='b')
+        ax.set_ylabel('XP')
+        ax2.set_ylabel('Level')
     RotateTickLabels(skills_plot)
+    skills_plot.add_legend()
+    plt.tight_layout()
 
     # Plot killcount
     killcount_plot = sns.FacetGrid(data=killcount, col='Boss', col_wrap=6,
                                    sharey=False)
     killcount_plot.map(sns.lineplot, 'Date', 'Kill count')
     RotateTickLabels(killcount_plot)
+    plt.tight_layout()
