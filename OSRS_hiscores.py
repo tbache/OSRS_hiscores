@@ -58,26 +58,30 @@ if __name__ == '__main__':
     parser.add_argument(
         '--player', default='ioniph',
         help='Name of the player whose stats are to be fetched.')
+    parser.add_argument(
+        '--update', action='store_true', default=False,
+        help='Will fetch stats from hiscores.')
     args = parser.parse_args()
 
     # Set player name
     player = str(args.player)
 
-    # Read players current stats from OSRS hiscores
-    page_name = 'https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1='+player
-    req = Request(page_name, headers={'User-Agent': 'Mozilla/5.0'})
-    webpage = urlopen(req).read()
-    if "No player" in str(webpage):
-        print("No player with name %s found. Exiting..." % (player))
-        sys.exit()
-    hiscores = pd.read_html(webpage)[2]
+    if args.update:
+        # Read players current stats from OSRS hiscores
+        page_name = 'https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1='+player
+        req = Request(page_name, headers={'User-Agent': 'Mozilla/5.0'})
+        webpage = urlopen(req).read()
+        if "No player" in str(webpage):
+            print("No player with name %s found. Exiting..." % (player))
+            sys.exit()
+        hiscores = pd.read_html(webpage)[2]
 
-    # Clean dataframe
-    hiscores = CleanHiscoresDataFrame(hiscores)
+        # Clean dataframe
+        hiscores = CleanHiscoresDataFrame(hiscores)
 
-    # Save current hiscores to csv file
-    print("Saving current stats to CSV file:", player+'-hiscores.csv')
-    hiscores.to_csv(player+'-hiscores.csv', mode='a', header=False)
+        # Save current hiscores to csv file
+        print("Saving current stats to CSV file:", player+'-hiscores.csv')
+        hiscores.to_csv(player+'-hiscores.csv', mode='a', header=False)
 
     # Read csv file for this player and format it
     if exists(player+'-hiscores.csv'):
