@@ -1,1 +1,3 @@
-.spyproject*
+.spyproject/**
+.spyproject/*
+.spyproject/config/workspace.ini
