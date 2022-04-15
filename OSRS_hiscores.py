@@ -55,6 +55,11 @@ def CleanHiscoresDataFrame(df):
     return df
 
 
+def RotateTickLabels(fig):
+    for axes in fig.axes.flat:
+        _ = axes.set_xticklabels(axes.get_xticklabels(), rotation=90)
+
+
 if __name__ == '__main__':
 
     # Parse CL arguments
@@ -96,15 +101,37 @@ if __name__ == '__main__':
     else:
         hiscores_all_time = hiscores
 
-    print(hiscores_all_time)
+    # print(hiscores_all_time)
 
-    # Change datetime to date for nice axis labels
-    hiscores_all_time['Date'] = pd.to_datetime(
-        hiscores_all_time['Date']).dt.date
+    # Create dataframe containing only "skills"
+    skill_list = ['Overall', 'Attack', 'Defence', 'Strength', 'Hitpoints',
+                  'Ranged', 'Prayer', 'Magic', 'Cooking', 'Woodcutting',
+                  'Fletching', 'Fishing', 'Firemaking', 'Crafting', 'Smithing',
+                  'Mining', 'Herblore', 'Agility', 'Thieving', 'Slayer',
+                  'Farming', 'Runecraft', 'Hunter', 'Construction']
+    single_skills = []
+    for s in skill_list:
+        single_skill = hiscores_all_time[(hiscores_all_time['Skill'] == s)]
+        single_skills.append(single_skill)
+    skills = pd.concat(single_skills)
 
-    # Plot all skills
-    g = sns.FacetGrid(data=hiscores_all_time, col='Skill', col_wrap=5,
-                      sharey=False)
-    g.map(sns.lineplot, 'Date', 'XP')
-    for axes in g.axes.flat:
-        _ = axes.set_xticklabels(axes.get_xticklabels(), rotation=90)
+    # Create dataframe containing only "kill count" by removing skill rows
+    killcount = pd.merge(hiscores_all_time, skills, indicator=True,
+                         how='outer').query('_merge=="left_only"')
+    killcount.drop(['_merge', 'XP'], axis=1, inplace=True)
+    killcount.columns = ['Date', 'Boss', 'Rank', 'Kill count']
+
+    # print(skills)
+    # print(killcount)
+
+    # Plot skills
+    skills_plot = sns.FacetGrid(data=skills, col='Skill', col_wrap=6,
+                                sharey=False)
+    skills_plot.map(sns.lineplot, 'Date', 'XP')
+    RotateTickLabels(skills_plot)
+
+    # Plot killcount
+    killcount_plot = sns.FacetGrid(data=killcount, col='Boss', col_wrap=6,
+                                   sharey=False)
+    killcount_plot.map(sns.lineplot, 'Date', 'Kill count')
+    RotateTickLabels(killcount_plot)
