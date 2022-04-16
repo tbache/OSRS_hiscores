@@ -43,10 +43,30 @@ def CleanHiscoresDataFrame(df):
     # Remove unnecessary row
     df.drop('Minigame', inplace=True)
     # Create multiindex using todays date and skill name
-    index = [(datetime.now(), i) for i in hiscores.index]
+    # print(df.index)
+    index = [(datetime.now(), i) for i in df.index]
     df.index = pd.MultiIndex.from_tuples(index, names=('Date', 'Skill'))
     df = df.astype(np.int64)
     return df
+
+
+def GetPlayerStats(player):
+    # Read players current stats from OSRS hiscores
+    page_name = 'https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1='+player
+    req = Request(page_name, headers={'User-Agent': 'Mozilla/5.0'})
+    webpage = urlopen(req).read()
+    if "No player" in str(webpage):
+        print("No player with name %s found. Exiting..." % (player))
+        sys.exit()
+    hiscores = pd.read_html(webpage)[2]
+
+    # Clean dataframe
+    hiscores = CleanHiscoresDataFrame(hiscores)
+
+    # Save current hiscores to csv file
+    print("Saving current stats to CSV file:", player+'-hiscores.csv')
+    hiscores.to_csv(player+'-hiscores.csv', mode='a', header=False)
+    return hiscores
 
 
 def RotateTickLabels(fig):
@@ -69,33 +89,34 @@ if __name__ == '__main__':
     # Set player name
     player = str(args.player)
 
+    # Update stats in csv file
     if args.update:
-        # Read players current stats from OSRS hiscores
-        page_name = 'https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1='+player
-        req = Request(page_name, headers={'User-Agent': 'Mozilla/5.0'})
-        webpage = urlopen(req).read()
-        if "No player" in str(webpage):
-            print("No player with name %s found. Exiting..." % (player))
-            sys.exit()
-        hiscores = pd.read_html(webpage)[2]
-
-        # Clean dataframe
-        hiscores = CleanHiscoresDataFrame(hiscores)
-
-        # Save current hiscores to csv file
-        print("Saving current stats to CSV file:", player+'-hiscores.csv')
-        hiscores.to_csv(player+'-hiscores.csv', mode='a', header=False)
+        _ = GetPlayerStats(player)
 
     # Read csv file for this player and format it
     if exists(player+'-hiscores.csv'):
         hiscores_all_time = pd.read_csv(
             player+'-hiscores.csv', parse_dates=[0],
             names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
-        # hiscores_all_time.set_index(['Date', 'Skill'], inplace=True)
     else:
-        hiscores_all_time = hiscores
-
-    # print(hiscores_all_time)
+        # Must not have given --update as csv file doesn't exist
+        # Ask user if they wish to update and create the csv file
+        while True:
+            user_input = input(
+                "CSV file for player %s does not exist. Would you like to create one? [y/n] " % (player))
+            if user_input not in ['y', 'n', 'yes', 'no']:
+                print("Please enter one of [y/n].")
+                continue
+            else:
+                break
+        if user_input == "y" or user_input == "yes":
+            _ = GetPlayerStats(player)
+            hiscores_all_time = pd.read_csv(
+                player+'-hiscores.csv', parse_dates=[0],
+                names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
+        else:
+            print("Exiting...")
+            sys.exit()
 
     # Create dataframe containing only "skills"
     skill_list = ['Overall', 'Attack', 'Defence', 'Strength', 'Hitpoints',
