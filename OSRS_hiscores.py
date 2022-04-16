@@ -105,8 +105,6 @@ if __name__ == '__main__':
     # Set player name
     player = str(args.player)
 
-    # Test
-
     # Update stats in csv file
     if args.update:
         GetPlayerStats(player)
