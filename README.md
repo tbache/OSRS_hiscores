@@ -18,6 +18,8 @@ Python3, argparse, os, pandas, datetime, numpy, seaborn, matplotlib,
 urllib
 
 Running
+Currently only tested on Windows 10. Plan to test on Linux
+in the future.
 The below should be prefixed with whatever system command you
 require to run python scripts on your system.
 
@@ -29,14 +31,15 @@ Optional arguments:
 --update            Update players stats from the hiscores.
 
 Example:
-python OSRS_hiscores.py --player Zezima --update
+run OSRS_hiscores.py --player Zezima --update
 
 
 TODO:
 - Add proper markdown.
-- If new player, ask user whether stats should be fetched even if update isn't included.'
-- Test on linux
+- Plan other features.
+- Create example jupyter notebook.
 
-Future potential features
+Future features
 - Read default player name from config file so that my username isn't published
 - Create script that runs this script once per day
+- Test on Linux
