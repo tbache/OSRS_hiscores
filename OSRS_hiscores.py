@@ -66,7 +66,6 @@ def GetPlayerStats(player):
     # Save current hiscores to csv file
     print("Saving current stats to CSV file:", player+'-hiscores.csv')
     hiscores.to_csv(player+'-hiscores.csv', mode='a', header=False)
-    return hiscores
 
 
 def RotateTickLabels(fig):
@@ -91,7 +90,7 @@ if __name__ == '__main__':
 
     # Update stats in csv file
     if args.update:
-        _ = GetPlayerStats(player)
+        GetPlayerStats(player)
 
     # Read csv file for this player and format it
     if exists(player+'-hiscores.csv'):
@@ -110,7 +109,7 @@ if __name__ == '__main__':
             else:
                 break
         if user_input == "y" or user_input == "yes":
-            _ = GetPlayerStats(player)
+            GetPlayerStats(player)
             hiscores_all_time = pd.read_csv(
                 player+'-hiscores.csv', parse_dates=[0],
                 names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
