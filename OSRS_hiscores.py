@@ -137,3 +137,5 @@ if __name__ == '__main__':
     killcount_plot.map(sns.lineplot, 'Date', 'Kill count')
     RotateTickLabels(killcount_plot)
     plt.tight_layout()
+
+    plt.show()
