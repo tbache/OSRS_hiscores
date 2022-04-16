@@ -1,6 +1,7 @@
 """
 Script that obtains a players data from OSRS hiscores and displays interesting
 information.
+See README for more information and usage.
 
 Created on 14 April 2022
 @author: Tom Bache
@@ -51,6 +52,15 @@ def CleanHiscoresDataFrame(df):
 
 
 def GetPlayerStats(player):
+    """
+    Fetches player stats from hiscores website and writes them
+    to csv file.
+
+    Parameters
+    ----------
+    player : string
+        Player username.
+    """
     # Read players current stats from OSRS hiscores
     page_name = 'https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1='+player
     req = Request(page_name, headers={'User-Agent': 'Mozilla/5.0'})
@@ -69,6 +79,13 @@ def GetPlayerStats(player):
 
 
 def RotateTickLabels(fig):
+    """
+    Rotates all x-axis tick labels in seaborn facetgrid
+
+    Parameters
+    ----------
+    fig : seaborn facetgrid
+    """
     for axes in fig.axes.flat:
         _ = axes.set_xticklabels(axes.get_xticklabels(), rotation=90)
 
