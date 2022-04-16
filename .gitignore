@@ -1,3 +1,2 @@
-.spyproject/**
-.spyproject/*
-.spyproject/config/workspace.ini
+.spyproject/
+.ipynb_checkpoints/
