@@ -1,9 +1,3 @@
-"""
-Created on Thu Apr 14 11:19:06 2022
-
-@author: Tom Bache
-"""
-
 OSRS_hiscores.
 Reads data from the OSRS hiscores for a certain player, saves
 their stats and plots the change in stats over time to show the
@@ -13,8 +7,11 @@ https://secure.runescape.com/m=hiscore_oldschool/overall
 The data is saved in a local CSV file. The CSV file is called
 <player>-hiscores.csv where <player> is the players username.
 
+Author: Tom Bache (https://github.com/tbache)
+
 
 Installation
+Clone from https://github.com/tbache/OSRS_hiscores
 
 Package requirements
 Python3, argparse, os, pandas, datetime, numpy, seaborn, matplotlib,
