@@ -1,0 +1,36 @@
+The OSRS_hiscores.py script can be run automatically by your operating system
+to save manually running each day. This gives a better overview of the stat
+progression.
+Instructions to do this using Windows and Linux are below. Unfortunately, I
+have no access to a Mac so no support is foreseen.
+
+-------------------------------
+Windows:
+A template automation.bat batch file is provided.
+The automation.bat file requires some minor edits for it to work:
+1.  Edit the "path" variable to the absolute path of the OSRS_hiscores
+    directory.
+2.  Replace "C:\Python39\python.exe" with the absolute path to your python
+    installation executable.
+3.  Replace "C:\user\OSRS_hiscores\OSRS_hiscores.py" with the absolute
+    path to the OSRS_hiscores.py script.
+
+Once the above is complete, the batch file is ready.
+To run it once per day, open the "Task Scheduler" and follow the below
+instructions:
+1.  Click "Create Basic Task..."
+2.  Enter a name and description. Click "Next >".
+3.  Choose a frequency to run the script. Click "Next >".
+4.  Choose a start time. Click "Next >".
+5.  Ensure "Start a program" is checked. Click "Next >".
+6.  In "Program/script:", set the path to the automation.bat file. Click
+    "Next >".
+7.  Check details are correct. Click "Finish".
+
+Your system is now setup to automatically run the program.
+
+-------------------------------
+Linux:
+Warning: this software has not yet been tested on Linux (planned in future).
+To automatically run the OSRS_hiscores.py script, use a cron job.
+Instructions here: https://man7.org/linux/man-pages/man5/crontab.5.html

@@ -34,6 +34,10 @@ Example:
 run OSRS_hiscores.py --player Zezima --update
 
 
+Automatic running
+The stats for a certain character can be automatically updated. See
+"automation_instructions.txt" for details.
+
 TODO:
 - Add proper markdown.
 - Plan other features.
@@ -41,5 +45,5 @@ TODO:
 
 Future features
 - Read default player name from config file so that my username isn't published
-- Create script that runs this script once per day
+- Setup script that automatically sets up the automation.bat file without use input.
 - Test on Linux
