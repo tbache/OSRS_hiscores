@@ -1,4 +1,4 @@
-OSRS_hiscores.
+### OSRS_hiscores
 Reads data from the OSRS hiscores for a certain player, saves
 their stats and plots the change in stats over time to show the
 accounts progress.
@@ -9,15 +9,18 @@ The data is saved in a local CSV file. The CSV file is called
 
 Author: Tom Bache (https://github.com/tbache)
 
+---
 
-Installation
+### Installation
 Clone from https://github.com/tbache/OSRS_hiscores
 
 Package requirements
 Python3, argparse, os, pandas, datetime, numpy, seaborn, matplotlib,
 urllib
 
-Running
+---
+
+### Running
 Currently only tested on Windows 10. Plan to test on Linux in the future.
 Unfortunately I have no access to a Mac so no support is planned.
 
@@ -37,18 +40,18 @@ Optional arguments:
 Example:
 run OSRS_hiscores.py --player Zezima --update
 
-
 Automatic running
 The stats for a certain character can be automatically updated. See
 "automation_instructions.txt" for details.
 
-TODO:
-- Add proper markdown to README.
+---
+
+### TODO:
 - Plan other features.
 - Create example jupyter notebook.
 - Add legend
 - Add property decorators to config class
 
-Future features
+### Future features
 - Setup script that automatically sets up the automation.bat file without use input.
 - Test on Linux
