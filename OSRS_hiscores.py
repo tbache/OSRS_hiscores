@@ -7,7 +7,7 @@ Created on 14 April 2022
 @author: Tom Bache
 """
 import argparse
-from os.path import exists
+import os
 import sys
 import pandas as pd
 from datetime import datetime
@@ -18,6 +18,55 @@ import matplotlib.pyplot as plt
 from urllib.request import Request, urlopen
 
 plt.style.use('ggplot')
+
+
+class Config:
+    """
+    Holds information read from config file
+
+    Attributes
+    ----------
+    player : str
+        username of player to be looked up on hiscores
+    update: bool
+        update players csv file from hiscores.
+    no_plot: bool
+        force update the players stats but do not plot them.
+
+    Methods
+    -------
+    ParseConfig():
+        Reads config file and sets attributes
+    Print():
+        Prints the config options given to the script.
+
+    """
+
+    def __init__(self):
+        self.player = ""
+        self.update = False
+        self.no_plot = False
+
+    def ParseConfig(self):
+        conf = open("config")
+        for line in conf:
+            if line.startswith("#"):
+                continue
+            val = line.split("=")[1].strip()
+            if line.startswith("player"):
+                self.player = val
+            elif line.startswith("update"):
+                if val.lower() == "true":
+                    self.update = True
+            elif line.startswith("no_plot"):
+                if val.lower() == "true":
+                    self.no_plot = True
+
+    def Print(self):
+        print("Options provided:")
+        print("\tplayer:", self.player)
+        print("\tupdate:", str(self.update))
+        print("\tno_plot:", str(self.no_plot))
 
 
 def CleanHiscoresDataFrame(df):
@@ -92,47 +141,74 @@ def RotateTickLabels(fig):
 
 if __name__ == '__main__':
 
+    # Read config
+    conf = Config()
+    conf.ParseConfig()
+
     # Parse CL arguments
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--player', default='ioniph',
+        '--player',
         help='Name of the player whose stats are to be fetched.')
     parser.add_argument(
         '--update', action='store_true', default=False,
         help='Will fetch stats from hiscores.')
+    parser.add_argument(
+        '--no_plot', action='store_true', default=False,
+        help='If given, only update the stats and do not plot.')
     args = parser.parse_args()
 
-    # Set player name
-    player = str(args.player)
+    # Overwrite config file option if given on command line
+    if args.player:
+        conf.player = str(args.player)
+    if args.update:
+        conf.update = True
+    if args.no_plot or conf.no_plot:
+        conf.no_plot = True
+        # If no_plot=True, also overwrite update
+        args.update = True
+        conf.update = True
+
+    # Check for spaces in player name
+    if " " in conf.player:
+        conf.player = conf.player.replace(" ", "+")
+
+    # Print config options
+    conf.Print()
 
     # Update stats in csv file
-    if args.update:
-        GetPlayerStats(player)
+    if conf.update:
+        GetPlayerStats(conf.player)
 
     # Read csv file for this player and format it
-    if exists(player+'-hiscores.csv'):
+    if os.path.exists(conf.player+'-hiscores.csv'):
         hiscores_all_time = pd.read_csv(
-            player+'-hiscores.csv', parse_dates=[0],
+            conf.player+'-hiscores.csv', parse_dates=[0],
             names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
     else:
         # Must not have given --update as csv file doesn't exist
         # Ask user if they wish to update and create the csv file
         while True:
             user_input = input(
-                "CSV file for player %s does not exist. Would you like to create one? [y/n] " % (player))
+                "CSV file for player %s does not exist. Would you like to create one? [y/n] " % (conf.player))
             if user_input not in ['y', 'n', 'yes', 'no']:
                 print("Please enter one of [y/n].")
                 continue
             else:
                 break
         if user_input == "y" or user_input == "yes":
-            GetPlayerStats(player)
+            GetPlayerStats(conf.player)
             hiscores_all_time = pd.read_csv(
-                player+'-hiscores.csv', parse_dates=[0],
+                conf.player+'-hiscores.csv', parse_dates=[0],
                 names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
         else:
             print("Exiting...")
             sys.exit()
+
+    # Exit script after writing to csv file if user wishes
+    if conf.no_plot:
+        print("Exiting without plotting.")
+        sys.exit()
 
     # Create dataframe containing only "skills"
     skill_list = ['Overall', 'Attack', 'Defence', 'Strength', 'Hitpoints',
