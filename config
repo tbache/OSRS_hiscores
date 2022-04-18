@@ -1,2 +1,5 @@
-player=ioniph
-path=C:\Users\emily\Documents\Tom\Coding\OSRS_hiscores
+# Config file holding options passed to OSRS_hiscores.py.
+# Can be used instead of the command line options.
+player=Lynx Titan
+update=False
+no_plot=False

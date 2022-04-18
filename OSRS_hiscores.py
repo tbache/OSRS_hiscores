@@ -21,7 +21,6 @@ plt.style.use('ggplot')
 
 
 class Config:
-    # TODO
     """
     Holds information read from config file
 
@@ -29,27 +28,45 @@ class Config:
     ----------
     player : str
         username of player to be looked up on hiscores
-    path : str
-        absolute path of directory containing OSRS_hiscores.py script
+    update: bool
+        update players csv file from hiscores.
+    no_plot: bool
+        force update the players stats but do not plot them.
 
     Methods
     -------
     ParseConfig():
         Reads config file and sets attributes
+    Print():
+        Prints the config options given to the script.
 
     """
 
     def __init__(self):
         self.player = ""
-        self.path = ""
+        self.update = False
+        self.no_plot = False
 
     def ParseConfig(self):
         conf = open("config")
         for line in conf:
+            if line.startswith("#"):
+                continue
+            val = line.split("=")[1].strip()
             if line.startswith("player"):
-                self.player = line.split("=")[1].strip()
-            elif line.startswith("path"):
-                self.path = line.split("=")[1].strip()
+                self.player = val
+            elif line.startswith("update"):
+                if val.lower() == "true":
+                    self.update = True
+            elif line.startswith("no_plot"):
+                if val.lower() == "true":
+                    self.no_plot = True
+
+    def Print(self):
+        print("Options provided:")
+        print("\tplayer:", self.player)
+        print("\tupdate:", str(self.update))
+        print("\tno_plot:", str(self.no_plot))
 
 
 def CleanHiscoresDataFrame(df):
@@ -128,9 +145,6 @@ if __name__ == '__main__':
     conf = Config()
     conf.ParseConfig()
 
-    # Change current path (required for automation)
-    os.chdir(conf.path)
-
     # Parse CL arguments
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -144,17 +158,26 @@ if __name__ == '__main__':
         help='If given, only update the stats and do not plot.')
     args = parser.parse_args()
 
-    # Overwrite player name if given on CL
+    # Overwrite config file option if given on command line
     if args.player:
         conf.player = str(args.player)
-
-    # If no_plot, overwrite update
-    if args.no_plot:
-        print("Overwriting CL argument '--update'.")
+    if args.update:
+        conf.update = True
+    if args.no_plot or conf.no_plot:
+        conf.no_plot = True
+        # If no_plot=True, also overwrite update
         args.update = True
+        conf.update = True
+
+    # Check for spaces in player name
+    if " " in conf.player:
+        conf.player = conf.player.replace(" ", "+")
+
+    # Print config options
+    conf.Print()
 
     # Update stats in csv file
-    if args.update:
+    if conf.update:
         GetPlayerStats(conf.player)
 
     # Read csv file for this player and format it
@@ -183,7 +206,7 @@ if __name__ == '__main__':
             sys.exit()
 
     # Exit script after writing to csv file if user wishes
-    if args.no_plot:
+    if conf.no_plot:
         print("Exiting without plotting.")
         sys.exit()
 
