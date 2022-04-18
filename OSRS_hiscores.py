@@ -7,7 +7,7 @@ Created on 14 April 2022
 @author: Tom Bache
 """
 import argparse
-from os.path import exists
+import os
 import sys
 import pandas as pd
 from datetime import datetime
@@ -18,6 +18,38 @@ import matplotlib.pyplot as plt
 from urllib.request import Request, urlopen
 
 plt.style.use('ggplot')
+
+
+class Config:
+    # TODO
+    """
+    Holds information read from config file
+
+    Attributes
+    ----------
+    player : str
+        username of player to be looked up on hiscores
+    path : str
+        absolute path of directory containing OSRS_hiscores.py script
+
+    Methods
+    -------
+    ParseConfig():
+        Reads config file and sets attributes
+
+    """
+
+    def __init__(self):
+        self.player = ""
+        self.path = ""
+
+    def ParseConfig(self):
+        conf = open("config")
+        for line in conf:
+            if line.startswith("player"):
+                self.player = line.split("=")[1].strip()
+            elif line.startswith("path"):
+                self.path = line.split("=")[1].strip()
 
 
 def CleanHiscoresDataFrame(df):
@@ -92,43 +124,51 @@ def RotateTickLabels(fig):
 
 if __name__ == '__main__':
 
+    # Read config
+    conf = Config()
+    conf.ParseConfig()
+
+    # Change current path (required for automation)
+    os.chdir(conf.path)
+
     # Parse CL arguments
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--player', default='ioniph',
+        '--player',
         help='Name of the player whose stats are to be fetched.')
     parser.add_argument(
         '--update', action='store_true', default=False,
         help='Will fetch stats from hiscores.')
     args = parser.parse_args()
 
-    # Set player name
-    player = str(args.player)
+    # Overwrite player name if given on CL
+    if args.player:
+        conf.player = str(args.player)
 
     # Update stats in csv file
     if args.update:
-        GetPlayerStats(player)
+        GetPlayerStats(conf.player)
 
     # Read csv file for this player and format it
-    if exists(player+'-hiscores.csv'):
+    if os.path.exists(conf.player+'-hiscores.csv'):
         hiscores_all_time = pd.read_csv(
-            player+'-hiscores.csv', parse_dates=[0],
+            conf.player+'-hiscores.csv', parse_dates=[0],
             names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
     else:
         # Must not have given --update as csv file doesn't exist
         # Ask user if they wish to update and create the csv file
         while True:
             user_input = input(
-                "CSV file for player %s does not exist. Would you like to create one? [y/n] " % (player))
+                "CSV file for player %s does not exist. Would you like to create one? [y/n] " % (conf.player))
             if user_input not in ['y', 'n', 'yes', 'no']:
                 print("Please enter one of [y/n].")
                 continue
             else:
                 break
         if user_input == "y" or user_input == "yes":
-            GetPlayerStats(player)
+            GetPlayerStats(conf.player)
             hiscores_all_time = pd.read_csv(
-                player+'-hiscores.csv', parse_dates=[0],
+                conf.player+'-hiscores.csv', parse_dates=[0],
                 names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
         else:
             print("Exiting...")
