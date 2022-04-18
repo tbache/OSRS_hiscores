@@ -139,11 +139,19 @@ if __name__ == '__main__':
     parser.add_argument(
         '--update', action='store_true', default=False,
         help='Will fetch stats from hiscores.')
+    parser.add_argument(
+        '--no_plot', action='store_true', default=False,
+        help='If given, only update the stats and do not plot.')
     args = parser.parse_args()
 
     # Overwrite player name if given on CL
     if args.player:
         conf.player = str(args.player)
+
+    # If no_plot, overwrite update
+    if args.no_plot:
+        print("Overwriting CL argument '--update'.")
+        args.update = True
 
     # Update stats in csv file
     if args.update:
@@ -173,6 +181,11 @@ if __name__ == '__main__':
         else:
             print("Exiting...")
             sys.exit()
+
+    # Exit script after writing to csv file if user wishes
+    if args.no_plot:
+        print("Exiting without plotting.")
+        sys.exit()
 
     # Create dataframe containing only "skills"
     skill_list = ['Overall', 'Attack', 'Defence', 'Strength', 'Hitpoints',
