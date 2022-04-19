@@ -12,13 +12,9 @@ import sys
 import pandas as pd
 from datetime import datetime
 import numpy as np
-# from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
-# import cufflinks as cf
-# import plotly.express as px
-# from plotly.subplots import make_subplots
+from plotly.subplots import make_subplots
 from plotly.offline import plot
 import plotly.graph_objects as go
-# import plotly.io as pio
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.patches
@@ -26,7 +22,6 @@ import matplotlib.patches
 from urllib.request import Request, urlopen
 
 plt.style.use('ggplot')
-# cf.go_offline()
 
 
 class Config:
@@ -250,32 +245,48 @@ if __name__ == '__main__':
     killcount.drop(['_merge', 'XP'], axis=1, inplace=True)
     killcount.columns = ['Date', 'Boss', 'Rank', 'Kill count']
 
+    # Create dataframe containing date and total kill count
+    unique_dates = list(killcount['Date'].unique())
+    total_killcount = [sum(killcount[killcount['Date'] == date]['Kill count'])
+                       for date in unique_dates]
+    total_killcount = pd.DataFrame({'Date': unique_dates,
+                                    'Kill count': total_killcount})
+
     # print(skills)
     # print(killcount)
 
     # Create interactive plots of overall level/XP and total boss kill count
-    # skills.plot(kind='scatter', x='Date', y='XP')
-    # fig = px.line(skills, x='Date', y='XP')
-    # fig.show()
-    # fig = go.Figure(data)
-    # fig = make_subplots(rows=1, cols=2)
-    # fig.add_trace(go.Scatter(x=skills['Date'], y=skills['XP'],
-    #                          name='XP', mode='lines'),
-    #               row=1, col=1)
-    # fig.add_trace(go.Scatter(x=skills['Date'], y=skills['Level'],
-    #                          name='Level', mode='lines'),
-    #               row=1, col=1)
-    # pio.renderers.default = 'browser'
-    # fig.show()
+    # Note that this plot will open in the default browser
+    overall_plot = make_subplots(rows=2, cols=2,
+                                 vertical_spacing=0.2,
+                                 specs=[[{}, {}],
+                                        [{"colspan": 2}, None]])
+    overall_plot.append_trace(go.Scatter(x=skills[(skills['Skill'] ==
+                                                   'Overall')]['Date'],
+                                         y=skills[(skills['Skill'] ==
+                                                   'Overall')]['Level'],
+                                         name='Level', mode='lines'),
+                              row=1, col=1)
+    overall_plot.append_trace(go.Scatter(x=skills[(skills['Skill'] ==
+                                                   'Overall')]['Date'],
+                                         y=skills[(skills['Skill'] ==
+                                                   'Overall')]['XP'],
+                                         name='XP', mode='lines'),
+                              row=1, col=2)
+    overall_plot.append_trace(go.Scatter(x=total_killcount['Date'],
+                                         y=total_killcount['Kill count'],
+                                         name='Kill count', mode='lines'),
+                              row=2, col=1)
+    overall_plot.update_xaxes(title_text='Date', row=1, col=1)
+    overall_plot.update_xaxes(title_text='Date', row=1, col=2)
+    overall_plot.update_xaxes(title_text='Date', row=2, col=1)
+    overall_plot.update_yaxes(title_text='Total level', row=1, col=1)
+    overall_plot.update_yaxes(title_text='Total XP', row=1, col=2)
+    overall_plot.update_yaxes(title_text='Total boss kill count', row=2, col=1)
+    overall_plot.update_layout(title_text='Overall stats')
+    plot(overall_plot, auto_open=True, filename='overall_stats.html')
 
-    fig = go.Figure(data=go.Scatter(x=skills[(skills['Skill'] ==
-                                              'Overall')]['Date'],
-                                    y=skills[(skills['Skill'] ==
-                                              'Overall')]['Level'],
-                                    name='Level', mode='lines'))
-    plot(fig, auto_open=True)
-
-    # Plot skills (one skill per plot)
+    # Plot skills on facetgrid (one skill per plot)
     skills_plot = sns.FacetGrid(data=skills, col='Skill', col_wrap=4,
                                 sharey=False, height=3.5, aspect=1.5)
     skills_plot.map(sns.lineplot, 'Date', 'XP')
@@ -297,7 +308,7 @@ if __name__ == '__main__':
     RotateTickLabels(skills_plot)
     plt.tight_layout()
 
-    # Plot killcount (one boss per plot)
+    # Plot killcount on facetgrid (one boss per plot)
     killcount_plot = sns.FacetGrid(data=killcount, col='Boss', col_wrap=6,
                                    sharey=False)
     killcount_plot.map(sns.lineplot, 'Date', 'Kill count')
