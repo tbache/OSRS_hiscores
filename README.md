@@ -46,6 +46,12 @@ The stats for a certain character can be automatically updated. See
 
 ---
 
+### Example
+Example data and plots are in the `examples/` directory. See the README there
+for more details.
+
+---
+
 ### TODO:
 - Plan other features.
 - Create example jupyter notebook.
