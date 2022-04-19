@@ -16,7 +16,7 @@ Clone from https://github.com/tbache/OSRS_hiscores
 
 Package requirements
 Python3, argparse, os, pandas, datetime, numpy, seaborn, matplotlib,
-urllib
+urllib, plotly
 
 ---
 
