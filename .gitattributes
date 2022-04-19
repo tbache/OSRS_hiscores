@@ -2,4 +2,4 @@
 *.py     text diff=python
 
 # Jupyter notebook
-*.ipynb  text
+*.ipynb linguist-documentation
