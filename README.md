@@ -47,7 +47,7 @@ The stats for a certain character can be automatically updated. See
 ---
 
 ### Example
-Example data and plots are in the `examples_plots/` directory. See the README
+Example data and plots are in the `example_plots/` directory. See the README
 there for more details.
 
 ---
