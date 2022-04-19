@@ -12,6 +12,13 @@ import sys
 import pandas as pd
 from datetime import datetime
 import numpy as np
+# from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+# import cufflinks as cf
+# import plotly.express as px
+# from plotly.subplots import make_subplots
+from plotly.offline import plot
+import plotly.graph_objects as go
+# import plotly.io as pio
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.patches
@@ -19,6 +26,7 @@ import matplotlib.patches
 from urllib.request import Request, urlopen
 
 plt.style.use('ggplot')
+# cf.go_offline()
 
 
 class Config:
@@ -244,6 +252,28 @@ if __name__ == '__main__':
 
     # print(skills)
     # print(killcount)
+
+    # Create interactive plots of overall level/XP and total boss kill count
+    # skills.plot(kind='scatter', x='Date', y='XP')
+    # fig = px.line(skills, x='Date', y='XP')
+    # fig.show()
+    # fig = go.Figure(data)
+    # fig = make_subplots(rows=1, cols=2)
+    # fig.add_trace(go.Scatter(x=skills['Date'], y=skills['XP'],
+    #                          name='XP', mode='lines'),
+    #               row=1, col=1)
+    # fig.add_trace(go.Scatter(x=skills['Date'], y=skills['Level'],
+    #                          name='Level', mode='lines'),
+    #               row=1, col=1)
+    # pio.renderers.default = 'browser'
+    # fig.show()
+
+    fig = go.Figure(data=go.Scatter(x=skills[(skills['Skill'] ==
+                                              'Overall')]['Date'],
+                                    y=skills[(skills['Skill'] ==
+                                              'Overall')]['Level'],
+                                    name='Level', mode='lines'))
+    plot(fig, auto_open=True)
 
     # Plot skills (one skill per plot)
     skills_plot = sns.FacetGrid(data=skills, col='Skill', col_wrap=4,
