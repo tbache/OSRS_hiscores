@@ -1,11 +1,13 @@
 ### OSRS_hiscores
-Reads data from the OSRS hiscores for a certain player, saves
-their stats and plots the change in stats over time to show the
-accounts progress.
-Hiscores available at:
-https://secure.runescape.com/m=hiscore_oldschool/overall
+Reads data from the OSRS hiscores for a certain player, saves their stats and
+plots the change in stats over time to show the accounts progress.
+
 The data is saved in a local CSV file. The CSV file is called
 <player>-hiscores.csv where <player> is the players username.
+Three plots are produced. See examples section below for more details.
+
+The OSRS hiscores are available at:
+https://secure.runescape.com/m=hiscore_oldschool/overall
 
 Author: Tom Bache (https://github.com/tbache)
 
@@ -14,7 +16,7 @@ Author: Tom Bache (https://github.com/tbache)
 ### Installation
 Clone from https://github.com/tbache/OSRS_hiscores
 
-Package requirements
+System/package requirements:
 Python3, argparse, os, pandas, datetime, numpy, seaborn, matplotlib,
 urllib, plotly
 
