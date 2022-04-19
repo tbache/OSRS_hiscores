@@ -1,2 +1,5 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Source files
+*.py     text diff=python
+
+# Jupyter notebook
+*.ipynb  text
