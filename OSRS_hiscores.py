@@ -44,9 +44,22 @@ class Config:
     """
 
     def __init__(self):
-        self.player = ""
-        self.update = False
-        self.no_plot = False
+        self.__player = ""
+        self.__update = False
+        self.__no_plot = False
+
+    @property
+    def player(self): return self.__player
+    @property
+    def update(self): return self.__update
+    @property
+    def no_plot(self): return self.__no_plot
+    @player.setter
+    def player(self, val): self.__player = val
+    @update.setter
+    def update(self, val): self.__update = val
+    @no_plot.setter
+    def no_plot(self, val): self.__no_plot = val
 
     def ParseConfig(self):
         conf = open("config")
