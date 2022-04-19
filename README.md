@@ -47,17 +47,11 @@ The stats for a certain character can be automatically updated. See
 ---
 
 ### Example
-Example data and plots are in the `examples/` directory. See the README there
-for more details.
+Example data and plots are in the `examples_plots/` directory. See the README
+there for more details.
 
 ---
 
-### TODO:
-- Plan other features.
-- Create example jupyter notebook.
-- Add legend
-- Add property decorators to config class
-
 ### Future features
-- Setup script that automatically sets up the automation.bat file without use input.
+- Setup script that automatically sets up the automation.bat file without user input.
 - Test on Linux
