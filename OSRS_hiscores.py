@@ -6,7 +6,7 @@ See README for more information and usage.
 Created on 14 April 2022
 @author: Tom Bache
 """
-import configparser
+
 import argparse
 import os
 import sys
@@ -22,7 +22,7 @@ import matplotlib.patches
 # Required when running in some IDEs (e.g. Spyder):
 from urllib.request import Request, urlopen
 
-from generate_config import GenerateConfig
+from config.config import read_config, print_config
 
 plt.style.use('ggplot')
 
@@ -95,46 +95,6 @@ def RotateTickLabels(fig):
     """
     for axes in fig.axes.flat:
         _ = axes.set_xticklabels(axes.get_xticklabels(), rotation=90)
-
-
-def read_config():
-    """
-    Reads config.ini file. If it doesn't already exist, it is created.
-
-    Returns
-    -------
-    config : ConfigParser
-        Object containing settings present in config file.
-
-    """
-    # If config file doesn't exist, generate it
-    if not os.path.exists('config.ini'):
-        print('Config file does not exist.')
-        print('Generating file using default parameters.')
-        GenerateConfig()
-        print('Config file generated - please edit and re-run. Exiting...')
-        sys.exit()
-
-    # Config file exists, read it
-    config = configparser.ConfigParser()
-    config.read('config.ini')
-    return config
-
-
-def print_config(conf):
-    """
-    Prints config options, separated into sections.
-
-    Parameters
-    ----------
-    conf : ConfigParser
-        Object read by read_config().
-
-    """
-    for sec in conf.sections():
-        print(sec+":")
-        for tup in conf.items(sec):
-            print(f"\t {tup[0]}: {tup[1]}")
 
 
 if __name__ == '__main__':

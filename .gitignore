@@ -1,3 +1,4 @@
 .spyproject/
 example_plots/.ipynb_checkpoints/
 config.ini
+__pycache__/
