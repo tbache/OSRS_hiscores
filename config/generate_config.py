@@ -5,7 +5,7 @@ Script to generate the config file required by OSRS_hiscores.py.
 import configparser
 
 
-def GenerateConfig():
+def generate_config():
     """
     Generates config file using default settings. This file is read by
     OSRS_hiscores.py when obtaining hiscores data.
@@ -36,4 +36,4 @@ def GenerateConfig():
 
 
 if __name__ == '__main__':
-    GenerateConfig()
+    generate_config()

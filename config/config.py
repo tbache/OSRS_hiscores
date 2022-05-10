@@ -6,7 +6,7 @@ import os.path
 import sys
 import configparser
 
-from config.generate_config import GenerateConfig
+from config.generate_config import generate_config
 
 
 def read_config():
@@ -23,7 +23,7 @@ def read_config():
     if not os.path.exists('config.ini'):
         print('Config file does not exist.')
         print('Generating file using default parameters.')
-        GenerateConfig()
+        generate_config()
         print('Config file generated - please edit and re-run. Exiting...')
         sys.exit()
 
