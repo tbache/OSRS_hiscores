@@ -6,7 +6,7 @@ import os.path
 import sys
 import configparser
 
-from generate_config import GenerateConfig
+from config.generate_config import GenerateConfig
 
 
 def read_config():
