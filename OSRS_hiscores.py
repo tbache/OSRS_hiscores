@@ -22,6 +22,8 @@ import matplotlib.patches
 # Required when running in some IDEs (e.g. Spyder):
 from urllib.request import Request, urlopen
 
+from generate_config import GenerateConfig
+
 plt.style.use('ggplot')
 
 
@@ -97,7 +99,7 @@ def RotateTickLabels(fig):
 
 def read_config():
     """
-    Reads config.ini file.
+    Reads config.ini file. If it doesn't already exist, it is created.
 
     Returns
     -------
@@ -105,6 +107,15 @@ def read_config():
         Object containing settings present in config file.
 
     """
+    # If config file doesn't exist, generate it
+    if not os.path.exists('config.ini'):
+        print('Config file does not exist.')
+        print('Generating file using default parameters.')
+        GenerateConfig()
+        print('Config file generated. Exiting...')
+        sys.exit()
+
+    # Config file exists, read it
     config = configparser.ConfigParser()
     config.read('config.ini')
     return config
