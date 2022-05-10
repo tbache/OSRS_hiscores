@@ -1,5 +1,0 @@
-# Config file holding options passed to OSRS_hiscores.py.
-# Can be used instead of the command line options.
-player=Lynx Titan
-update=False
-no_plot=False

@@ -6,6 +6,7 @@ See README for more information and usage.
 Created on 14 April 2022
 @author: Tom Bache
 """
+import configparser
 import argparse
 import os
 import sys
@@ -21,69 +22,9 @@ import matplotlib.patches
 # Required when running in some IDEs (e.g. Spyder):
 from urllib.request import Request, urlopen
 
+from generate_config import GenerateConfig
+
 plt.style.use('ggplot')
-
-
-class Config:
-    """
-    Holds information read from config file
-
-    Attributes
-    ----------
-    player : str
-        username of player to be looked up on hiscores
-    update: bool
-        update players csv file from hiscores.
-    no_plot: bool
-        force update the players stats but do not plot them.
-
-    Methods
-    -------
-    ParseConfig():
-        Reads config file and sets attributes
-    Print():
-        Prints the config options given to the script.
-
-    """
-
-    def __init__(self):
-        self.__player = ""
-        self.__update = False
-        self.__no_plot = False
-
-    @property
-    def player(self): return self.__player
-    @property
-    def update(self): return self.__update
-    @property
-    def no_plot(self): return self.__no_plot
-    @player.setter
-    def player(self, val): self.__player = val
-    @update.setter
-    def update(self, val): self.__update = val
-    @no_plot.setter
-    def no_plot(self, val): self.__no_plot = val
-
-    def ParseConfig(self):
-        conf = open("config")
-        for line in conf:
-            if line.startswith("#"):
-                continue
-            val = line.split("=")[1].strip()
-            if line.startswith("player"):
-                self.player = val
-            elif line.startswith("update"):
-                if val.lower() == "true":
-                    self.update = True
-            elif line.startswith("no_plot"):
-                if val.lower() == "true":
-                    self.no_plot = True
-
-    def Print(self):
-        print("Options provided:")
-        print("\tplayer:", self.player)
-        print("\tupdate:", str(self.update))
-        print("\tno_plot:", str(self.no_plot))
 
 
 def CleanHiscoresDataFrame(df):
@@ -156,11 +97,50 @@ def RotateTickLabels(fig):
         _ = axes.set_xticklabels(axes.get_xticklabels(), rotation=90)
 
 
+def read_config():
+    """
+    Reads config.ini file. If it doesn't already exist, it is created.
+
+    Returns
+    -------
+    config : ConfigParser
+        Object containing settings present in config file.
+
+    """
+    # If config file doesn't exist, generate it
+    if not os.path.exists('config.ini'):
+        print('Config file does not exist.')
+        print('Generating file using default parameters.')
+        GenerateConfig()
+        print('Config file generated - please edit and re-run. Exiting...')
+        sys.exit()
+
+    # Config file exists, read it
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    return config
+
+
+def print_config(conf):
+    """
+    Prints config options, separated into sections.
+
+    Parameters
+    ----------
+    conf : ConfigParser
+        Object read by read_config().
+
+    """
+    for sec in conf.sections():
+        print(sec+":")
+        for tup in conf.items(sec):
+            print(f"\t {tup[0]}: {tup[1]}")
+
+
 if __name__ == '__main__':
 
-    # Read config
-    conf = Config()
-    conf.ParseConfig()
+    # Read config file
+    config = read_config()
 
     # Parse CL arguments
     parser = argparse.ArgumentParser()
@@ -177,53 +157,58 @@ if __name__ == '__main__':
 
     # Overwrite config file option if given on command line
     if args.player:
-        conf.player = str(args.player)
+        config['PlayerSettings']['player'] = str(args.player)
     if args.update:
-        conf.update = True
-    if args.no_plot or conf.no_plot:
-        conf.no_plot = True
+        config['PlayerSettings']['update'] = 'True'
+    if args.no_plot or config['PlayerSettings'].getboolean('no_plot'):
+        config['PlotSettings']['no_plot'] = 'True'
         # If no_plot=True, also overwrite update
         args.update = True
-        conf.update = True
-
-    # Check for spaces in player name
-    if " " in conf.player:
-        conf.player = conf.player.replace(" ", "+")
+        config['PlayerSettings']['update'] = 'True'
 
     # Print config options
-    conf.Print()
+    print_config(config)
+
+    # Set config values
+    player = config['PlayerSettings']['player']
+    update = config['PlayerSettings'].getboolean('update')
+    no_plot = config['PlotSettings'].getboolean('no_plot')
+
+    # Check for spaces in player name
+    if " " in player:
+        player = player.replace(" ", "+")
 
     # Update stats in csv file
-    if conf.update:
-        GetPlayerStats(conf.player)
+    if update:
+        GetPlayerStats(player)
 
     # Read csv file for this player and format it
-    if os.path.exists(conf.player+'-hiscores.csv'):
+    if os.path.exists(player+'-hiscores.csv'):
         hiscores_all_time = pd.read_csv(
-            conf.player+'-hiscores.csv', parse_dates=[0],
+            player+'-hiscores.csv', parse_dates=[0],
             names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
     else:
         # Must not have given --update as csv file doesn't exist
         # Ask user if they wish to update and create the csv file
         while True:
             user_input = input(
-                "CSV file for player %s does not exist. Would you like to create one? [y/n] " % (conf.player))
+                "CSV file for player %s does not exist. Would you like to create one? [y/n] " % (player))
             if user_input not in ['y', 'n', 'yes', 'no']:
                 print("Please enter one of [y/n].")
                 continue
             else:
                 break
         if user_input == "y" or user_input == "yes":
-            GetPlayerStats(conf.player)
+            GetPlayerStats(player)
             hiscores_all_time = pd.read_csv(
-                conf.player+'-hiscores.csv', parse_dates=[0],
+                player+'-hiscores.csv', parse_dates=[0],
                 names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
         else:
             print("Exiting...")
             sys.exit()
 
     # Exit script after writing to csv file if user wishes
-    if conf.no_plot:
+    if no_plot:
         print("Exiting without plotting.")
         sys.exit()
 
