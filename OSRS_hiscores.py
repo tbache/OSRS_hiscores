@@ -96,12 +96,30 @@ def RotateTickLabels(fig):
 
 
 def read_config():
+    """
+    Reads config.ini file.
+
+    Returns
+    -------
+    config : ConfigParser
+        Object containing settings present in config file.
+
+    """
     config = configparser.ConfigParser()
     config.read('config.ini')
     return config
 
 
 def print_config(conf):
+    """
+    Prints config options, separated into sections.
+
+    Parameters
+    ----------
+    conf : ConfigParser
+        Object read by read_config().
+
+    """
     for sec in conf.sections():
         print(sec+":")
         for tup in conf.items(sec):
