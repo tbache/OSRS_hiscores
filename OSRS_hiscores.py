@@ -112,7 +112,7 @@ def read_config():
         print('Config file does not exist.')
         print('Generating file using default parameters.')
         GenerateConfig()
-        print('Config file generated. Exiting...')
+        print('Config file generated - please edit and re-run. Exiting...')
         sys.exit()
 
     # Config file exists, read it
