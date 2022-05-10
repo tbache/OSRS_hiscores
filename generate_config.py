@@ -1,27 +1,28 @@
 """
-
+Script to generate the config file required by OSRS_hiscores.py.
 """
 
 import configparser
 
+# Create config handler
 config_file = configparser.ConfigParser()
 
+# Add player settings section
 config_file.add_section("PlayerSettings")
 config_file.set("PlayerSettings", "player", "Zezima")
 config_file.set("PlayerSettings", "update", "False")
 
+# Add plot settings section
 config_file.add_section("PlotSettings")
 config_file.set("PlotSettings", "no_plot", "False")
 
+# Write default settings to new config file
 with open(r"config.ini", 'w') as configfileObj:
     config_file.write(configfileObj)
-    # configfileObj.close()
-
 print("Config file 'config.ini' created.")
 
+# Read and print default settings from config file
 with open("config.ini", "r") as configfileObj:
-    # read_file = open("config.ini", "r")
     content = configfileObj.read()
     print("Contents of the config file:\n")
     print(content)
-    # read_file.close()
