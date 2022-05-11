@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
     # Update stats in csv file
     if player.update:
-        player.GetPlayerStats()
+        player.get_player_stats()
 
     # Read csv file for this player and format it
     if os.path.exists(player.name+'-hiscores.csv'):
@@ -103,7 +103,7 @@ if __name__ == '__main__':
             else:
                 break
         if user_input == "y" or user_input == "yes":
-            player.GetPlayerStats()
+            player.get_player_stats()
             hiscores_all_time = pd.read_csv(
                 player.name+'-hiscores.csv', parse_dates=[0],
                 names=['Date', 'Skill', 'Rank', 'Level', 'XP'])

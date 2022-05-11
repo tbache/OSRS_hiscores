@@ -40,7 +40,7 @@ class Player:
         self.update = False
         self.stats = 0
 
-    def CleanHiscoresDataFrame(self):
+    def clean_hiscores_dataframe(self):
         """
         Cleans dataframe read from hiscores website to make it human readable.
         Sets todays date and skill name as multiindex for writing to csv later.
@@ -71,7 +71,7 @@ class Player:
         self.stats = self.stats.astype(np.int64)
         # return df
 
-    def GetPlayerStats(self):
+    def get_player_stats(self):
         """
         Fetches player stats from hiscores website and writes them
         to csv file.
