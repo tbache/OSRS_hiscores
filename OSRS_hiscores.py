@@ -180,7 +180,8 @@ if __name__ == '__main__':
                                 sharey=False, height=3.5, aspect=1.5)
     skills_plot.map(sns.lineplot, 'Date', 'XP')
     # Add plot of level to XP plot using a 2nd y-axis
-    for ax, (_, subdata) in zip(skills_plot.axes, skills.groupby('Skill', sort=False)):
+    for ax, (_, subdata) in zip(skills_plot.axes,
+                                skills.groupby('Skill', sort=False)):
         ax2 = ax.twinx()
         subdata.plot(x='Date', y='Level', ax=ax2, legend=False, color='b')
         ax.set_ylabel('XP')
