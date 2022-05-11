@@ -86,8 +86,8 @@ if __name__ == '__main__':
         player.get_player_stats_from_html()
         player.write_player_stats_to_csv()
 
-    # Read csv file for this player and format it
-    hiscores_all_time = player.get_player_stats_from_csv()
+    # Read csv file for this player
+    player.get_player_stats_from_csv()
 
     # Exit script after writing to csv file if user wishes
     if no_plot:
@@ -102,12 +102,12 @@ if __name__ == '__main__':
                   'Farming', 'Runecraft', 'Hunter', 'Construction']
     single_skills = []
     for s in skill_list:
-        single_skill = hiscores_all_time[(hiscores_all_time['Skill'] == s)]
+        single_skill = player.stats[(player.stats['Skill'] == s)]
         single_skills.append(single_skill)
     skills = pd.concat(single_skills)
 
     # Create dataframe containing only "kill count" by removing skill rows
-    killcount = pd.merge(hiscores_all_time, skills, indicator=True,
+    killcount = pd.merge(player.stats, skills, indicator=True,
                          how='outer').query('_merge=="left_only"')
     killcount.drop(['_merge', 'XP'], axis=1, inplace=True)
     killcount.columns = ['Date', 'Boss', 'Rank', 'Kill count']
