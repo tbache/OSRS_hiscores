@@ -1,4 +1,8 @@
 """
+Module for plots containing summary statistics.
+
+Functions:
+    create_summary_plots()
 
 """
 
@@ -8,6 +12,17 @@ import plotly.graph_objects as go
 
 
 def create_summary_plots(player):
+    """
+    Create interactive figure containing subplots showing total level, xp
+    and boss killcount.
+
+    Parameters
+    ----------
+    player : Player
+        Instance of Player class that contains players statistics.
+
+
+    """
     # Create interactive plots of overall level/XP and total boss kill count
     # Note that this plot will open in the default browser
     overall_plot = make_subplots(rows=2, cols=2,

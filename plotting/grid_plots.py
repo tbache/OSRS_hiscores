@@ -1,4 +1,11 @@
 """
+Module containing functions to produce plots of change in individual skill
+levels/xp and boss killcount over time.
+
+Functions:
+    rotate_tick_labels(seaborn.facetgrid)
+    plot_skills(Player)
+    plot_killcount(Player)
 
 """
 
@@ -7,7 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches
 
 
-def RotateTickLabels(fig):
+def rotate_tick_labels(fig):
     """
     Rotates all x-axis tick labels in seaborn facetgrid
 
@@ -20,6 +27,16 @@ def RotateTickLabels(fig):
 
 
 def plot_skills(player):
+    """
+    Create facetgrid containing subplots of change in xp/level per skill over
+    time.
+
+    Parameters
+    ----------
+    player : Player
+        Instance of Player class that contains players statistics.
+
+    """
     # Plot skills on facetgrid (one skill per plot)
     skills_plot = sns.FacetGrid(data=player.skills, col='Skill', col_wrap=4,
                                 sharey=False, height=3.5, aspect=1.5)
@@ -40,13 +57,23 @@ def plot_skills(player):
         patches = [matplotlib.patches.Patch(
             color=v, label=k) for k, v in name_to_color.items()]
         plt.legend(handles=patches, loc='upper left')
-    RotateTickLabels(skills_plot)
+    rotate_tick_labels(skills_plot)
     plt.tight_layout()
 
 
 def plot_killcount(player):
+    """
+    Create facetgrid containing subplots of change in killcount per boss over
+    time.
+
+    Parameters
+    ----------
+    player : Player
+        Instance of Player class that contains players statistics.
+
+    """
     killcount_plot = sns.FacetGrid(data=player.killcount, col='Boss',
                                    col_wrap=6, sharey=False)
     killcount_plot.map(sns.lineplot, 'Date', 'Kill count')
-    RotateTickLabels(killcount_plot)
+    rotate_tick_labels(killcount_plot)
     plt.tight_layout()
