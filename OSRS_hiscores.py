@@ -98,9 +98,6 @@ if __name__ == '__main__':
     player.extract_skills()
     player.extract_killcount_and_total()
 
-    # print(skills)
-    # print(killcount)
-
     # Create interactive plots of overall level/XP and total boss kill count
     # Note that this plot will open in the default browser
     overall_plot = make_subplots(rows=2, cols=2,
