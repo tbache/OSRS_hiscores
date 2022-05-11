@@ -2,3 +2,5 @@
 example_plots/.ipynb_checkpoints/
 config.ini
 __pycache__/
+*hiscores.csv
+*overall_stats.html
