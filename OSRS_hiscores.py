@@ -41,9 +41,17 @@ class Player:
     -------
 
 
+    TODO:
+        Add setters and getters
+        Update docs
+        Split GetPlayerStats into Get and Write
+        Replace hiscores_all_time with player.stats.
+
     """
 
     def __init__(self):
+        self.name = ""
+        self.update = False
         self.stats = 0
 
     def CleanHiscoresDataFrame(self):
@@ -77,7 +85,7 @@ class Player:
         self.stats = self.stats.astype(np.int64)
         # return df
 
-    def GetPlayerStats(self, player):
+    def GetPlayerStats(self):
         """
         Fetches player stats from hiscores website and writes them
         to csv file.
@@ -88,20 +96,20 @@ class Player:
             Player username.
             """
         # Read players current stats from OSRS hiscores
-        page_name = 'https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1='+player
+        page_name = 'https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1='+self.name
         req = Request(page_name, headers={'User-Agent': 'Mozilla/5.0'})
         webpage = urlopen(req).read()
         if "No player" in str(webpage):
-            print("No player with name %s found. Exiting..." % (player))
+            print("No player with name %s found. Exiting..." % (self.name))
             sys.exit()
-        hiscores = pd.read_html(webpage)[2]
+        self.stats = pd.read_html(webpage)[2]
 
         # Clean dataframe
-        hiscores = hiscores.CleanHiscoresDataFrame()
+        self.CleanHiscoresDataFrame()
 
         # Save current hiscores to csv file
-        print("Saving current stats to CSV file:", player+'-hiscores.csv')
-        hiscores.to_csv(player+'-hiscores.csv', mode='a', header=False)
+        print("Saving current stats to CSV file:", self.name+'-hiscores.csv')
+        self.stats.to_csv(self.name+'-hiscores.csv', mode='a', header=False)
 
 
 def RotateTickLabels(fig):
@@ -148,39 +156,42 @@ if __name__ == '__main__':
     # Print config options
     print_config(config)
 
+    # Create Player instance
+    player = Player()
+
     # Set config values
-    player = config['PlayerSettings']['player']
-    update = config['PlayerSettings'].getboolean('update')
+    player.name = config['PlayerSettings']['player']
+    player.update = config['PlayerSettings'].getboolean('update')
     no_plot = config['PlotSettings'].getboolean('no_plot')
 
     # Check for spaces in player name
-    if " " in player:
-        player = player.replace(" ", "+")
+    if " " in player.name:
+        player.name = player.name.replace(" ", "+")
 
     # Update stats in csv file
-    if update:
-        GetPlayerStats(player)
+    if player.update:
+        player.GetPlayerStats()
 
     # Read csv file for this player and format it
-    if os.path.exists(player+'-hiscores.csv'):
+    if os.path.exists(player.name+'-hiscores.csv'):
         hiscores_all_time = pd.read_csv(
-            player+'-hiscores.csv', parse_dates=[0],
+            player.name+'-hiscores.csv', parse_dates=[0],
             names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
     else:
         # Must not have given --update as csv file doesn't exist
         # Ask user if they wish to update and create the csv file
         while True:
             user_input = input(
-                "CSV file for player %s does not exist. Would you like to create one? [y/n] " % (player))
+                "CSV file for player %s does not exist. Would you like to create one? [y/n] " % (player.name))
             if user_input not in ['y', 'n', 'yes', 'no']:
                 print("Please enter one of [y/n].")
                 continue
             else:
                 break
         if user_input == "y" or user_input == "yes":
-            GetPlayerStats(player)
+            player.GetPlayerStats()
             hiscores_all_time = pd.read_csv(
-                player+'-hiscores.csv', parse_dates=[0],
+                player.name+'-hiscores.csv', parse_dates=[0],
                 names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
         else:
             print("Exiting...")
