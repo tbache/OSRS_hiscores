@@ -94,30 +94,9 @@ if __name__ == '__main__':
         print("Exiting without plotting.")
         sys.exit()
 
-    # Create dataframe containing only "skills"
-    skill_list = ['Overall', 'Attack', 'Defence', 'Strength', 'Hitpoints',
-                  'Ranged', 'Prayer', 'Magic', 'Cooking', 'Woodcutting',
-                  'Fletching', 'Fishing', 'Firemaking', 'Crafting', 'Smithing',
-                  'Mining', 'Herblore', 'Agility', 'Thieving', 'Slayer',
-                  'Farming', 'Runecraft', 'Hunter', 'Construction']
-    single_skills = []
-    for s in skill_list:
-        single_skill = player.stats[(player.stats['Skill'] == s)]
-        single_skills.append(single_skill)
-    skills = pd.concat(single_skills)
-
-    # Create dataframe containing only "kill count" by removing skill rows
-    killcount = pd.merge(player.stats, skills, indicator=True,
-                         how='outer').query('_merge=="left_only"')
-    killcount.drop(['_merge', 'XP'], axis=1, inplace=True)
-    killcount.columns = ['Date', 'Boss', 'Rank', 'Kill count']
-
-    # Create dataframe containing date and total kill count
-    unique_dates = list(killcount['Date'].unique())
-    total_killcount = [sum(killcount[killcount['Date'] == date]['Kill count'])
-                       for date in unique_dates]
-    total_killcount = pd.DataFrame({'Date': unique_dates,
-                                    'Kill count': total_killcount})
+    # Split overall stats into "skills" and "killcount"
+    player.extract_skills()
+    player.extract_killcount_and_total()
 
     # print(skills)
     # print(killcount)

@@ -26,6 +26,11 @@ class Player:
     name: player name being analysed
     update: whether stats in csv file should be updated from hiscores
     stats : pandas dataframe containing player's stats
+    skills : pandas dataframe containing player's skill stats (subset of stats)
+    killcount : pandas dataframe containing player's boss killcount stats
+                (subset of stats)
+    total_killcount : pandas dataframe containing player's total boss killcount
+                      (sum of 'killcount' per day)
 
     Methods
     -------
@@ -37,9 +42,10 @@ class Player:
         Writes player stats to a csv file.
     get_player_stats_from_csv():
         Reads player stats from a csv file.
-
-    TODO:
-        Replace hiscores_all_time with player.stats.
+    extract_skills():
+        Extracts skills from self.stats.
+    extract_killcount():
+        Extracts boss killcount and sum of boss killcount from self.stats.
 
     """
 
@@ -47,6 +53,9 @@ class Player:
         self.__name = ""
         self.__update = False
         self.__stats = None
+        self.__skills = None
+        self.__killcount = None
+        self.__total_killcount = None
 
     # Getters
     @property
@@ -55,6 +64,12 @@ class Player:
     def update(self): return self.__update
     @property
     def stats(self): return self.__stats
+    @property
+    def skills(self): return self.__skills
+    @property
+    def killcount(self): return self.__killcount
+    @property
+    def total_killcount(self): return self.__total_killcount
 
     # Setters
     @name.setter
@@ -63,6 +78,12 @@ class Player:
     def update(self, value): self.__update = value
     @stats.setter
     def stats(self, value): self.__stats = value
+    @skills.setter
+    def skills(self, value): self.__skills = value
+    @killcount.setter
+    def killcount(self, value): self.__killcount = value
+    @total_killcount.setter
+    def total_killcount(self, value): self.__total_killcount = value
 
     # Methods
     def clean_player_stats(self):
@@ -167,3 +188,43 @@ class Player:
                 sys.exit()
 
         return self.stats
+
+    def extract_skills(self):
+        """
+        Obtains stats for items in 'stats' considered 'skills'.
+        The instance's 'skills' object is set here.
+
+        """
+        # Obtain series' corresponding to skills and concatenate them
+        skill_list = ['Overall', 'Attack', 'Defence', 'Strength', 'Hitpoints',
+                      'Ranged', 'Prayer', 'Magic', 'Cooking', 'Woodcutting',
+                      'Fletching', 'Fishing', 'Firemaking', 'Crafting',
+                      'Smithing', 'Mining', 'Herblore', 'Agility', 'Thieving',
+                      'Slayer', 'Farming', 'Runecraft', 'Hunter',
+                      'Construction']
+        single_skills = []
+        for s in skill_list:
+            single_skill = self.stats[(self.stats['Skill'] == s)]
+            single_skills.append(single_skill)
+        self.skills = pd.concat(single_skills)
+
+    def extract_killcount_and_total(self):
+        """
+        Obtains stats for items in 'stats' considered 'boss killcount'.
+        All killcounts are also summed to obtain total per date.
+        The instance's 'killcount' and ''total_killcount' is set by this
+        method.
+
+        """
+        # Obtain killcount by removing skills from overall stats
+        self.killcount = pd.merge(self.stats, self.skills, indicator=True,
+                                  how='outer').query('_merge=="left_only"')
+        self.killcount.drop(['_merge', 'XP'], axis=1, inplace=True)
+        self.killcount.columns = ['Date', 'Boss', 'Rank', 'Kill count']
+
+        # Create new dataframe containing date and total kill count
+        unique_dates = list(self.killcount['Date'].unique())
+        totals = [sum(self.killcount[self.killcount['Date'] == date]['Kill count'])
+                  for date in unique_dates]
+        self.total_killcount = pd.DataFrame({'Date': unique_dates,
+                                             'Kill count': totals})
