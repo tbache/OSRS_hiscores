@@ -39,10 +39,6 @@ if __name__ == '__main__':
     player.update = config['PlayerSettings'].getboolean('update')
     no_plot = config['PlotSettings'].getboolean('no_plot')
 
-    # Check for spaces in player name
-    if " " in player.name:
-        player.name = player.name.replace(" ", "+")
-
     # Update stats in csv file
     if player.update:
         player.get_player_stats_from_html()

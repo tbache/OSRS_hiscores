@@ -23,7 +23,7 @@ class Player:
 
     Attributes
     ----------
-    name: player name being analysed
+    name: player name being analysed. When set, spaces are replaced with "+".
     update: whether stats in csv file should be updated from hiscores
     stats : pandas dataframe containing player's stats
     skills : pandas dataframe containing player's skill stats (subset of stats)
@@ -73,7 +73,12 @@ class Player:
 
     # Setters
     @name.setter
-    def name(self, value): self.__name = value
+    def name(self, value):
+        # Replace spaces in player name
+        if " " in value:
+            value = value.replace(" ", "+")
+        self.__name = value
+
     @update.setter
     def update(self, value): self.__update = value
     @stats.setter
