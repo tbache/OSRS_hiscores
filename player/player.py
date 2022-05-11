@@ -40,7 +40,7 @@ class Player:
         self.update = False
         self.stats = 0
 
-    def clean_hiscores_dataframe(self):
+    def clean_player_stats(self):
         """
         Cleans dataframe read from hiscores website to make it human readable.
         Sets todays date and skill name as multiindex for writing to csv later.
@@ -71,7 +71,7 @@ class Player:
         self.stats = self.stats.astype(np.int64)
         # return df
 
-    def get_player_stats(self):
+    def get_player_stats_from_html(self):
         """
         Fetches player stats from hiscores website and writes them
         to csv file.
@@ -91,8 +91,11 @@ class Player:
         self.stats = pd.read_html(webpage)[2]
 
         # Clean dataframe
-        self.CleanHiscoresDataFrame()
+        self.clean_player_stats()
 
+    def write_player_stats(self):
         # Save current hiscores to csv file
-        print("Saving current stats to CSV file:", self.name+'-hiscores.csv')
-        self.stats.to_csv(self.name+'-hiscores.csv', mode='a', header=False)
+        print(
+            f"Saving current stats to CSV file: {self.name}-hiscores.csv")
+        self.stats.to_csv(self.name+'-hiscores.csv',
+                          mode='a', header=False)
