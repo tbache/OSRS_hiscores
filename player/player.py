@@ -50,26 +50,26 @@ class Player:
     """
 
     def __init__(self):
-        self.__name = ""
-        self.__update = False
-        self.__stats = None
-        self.__skills = None
-        self.__killcount = None
-        self.__total_killcount = None
+        self._name = ""
+        self._update = False
+        self._stats = None
+        self._skills = None
+        self._killcount = None
+        self._total_killcount = None
 
     # Getters
     @property
-    def name(self): return self.__name
+    def name(self): return self._name
     @property
-    def update(self): return self.__update
+    def update(self): return self._update
     @property
-    def stats(self): return self.__stats
+    def stats(self): return self._stats
     @property
-    def skills(self): return self.__skills
+    def skills(self): return self._skills
     @property
-    def killcount(self): return self.__killcount
+    def killcount(self): return self._killcount
     @property
-    def total_killcount(self): return self.__total_killcount
+    def total_killcount(self): return self._total_killcount
 
     # Setters
     @name.setter
@@ -77,18 +77,18 @@ class Player:
         # Replace spaces in player name
         if " " in value:
             value = value.replace(" ", "+")
-        self.__name = value
+        self._name = value
 
     @update.setter
-    def update(self, value): self.__update = value
+    def update(self, value): self._update = value
     @stats.setter
-    def stats(self, value): self.__stats = value
+    def stats(self, value): self._stats = value
     @skills.setter
-    def skills(self, value): self.__skills = value
+    def skills(self, value): self._skills = value
     @killcount.setter
-    def killcount(self, value): self.__killcount = value
+    def killcount(self, value): self._killcount = value
     @total_killcount.setter
-    def total_killcount(self, value): self.__total_killcount = value
+    def total_killcount(self, value): self._total_killcount = value
 
     # Methods
     def clean_player_stats(self):
