@@ -8,7 +8,6 @@ Created on 14 April 2022
 """
 
 import argparse
-import os
 import sys
 import pandas as pd
 from plotly.subplots import make_subplots
