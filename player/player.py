@@ -6,6 +6,7 @@ Module containing Player class.
 """
 
 import sys
+import os
 import pandas as pd
 from datetime import datetime
 import numpy as np
@@ -102,3 +103,43 @@ class Player:
             f"Saving current stats to CSV file: {self.name}-hiscores.csv")
         self.stats.to_csv(self.name+'-hiscores.csv',
                           mode='a', header=False)
+
+    def get_player_stats_from_csv(self):
+        """
+        Reads player stats from a csv file (<name>-hiscores.csv).
+
+        Checks are made to ensure the csv file exists. If it does not, the
+        user is asked whether the csv file should be created.
+
+        Returns
+        -------
+        self.stats : pandas dataframe
+            DataFrame containing player stats.
+
+        """
+        if os.path.exists(self.name+'-hiscores.csv'):
+            self.stats = pd.read_csv(
+                self.name+'-hiscores.csv', parse_dates=[0],
+                names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
+        else:
+            # Must not have given --update as csv file doesn't exist
+            # Ask user if they wish to update and create the csv file
+            while True:
+                user_input = input(
+                    "CSV file for player %s does not exist. Would you like to create one? [y/n] " % (self.name))
+                if user_input not in ['y', 'n', 'yes', 'no']:
+                    print("Please enter one of [y/n].")
+                    continue
+                else:
+                    break
+            if user_input == "y" or user_input == "yes":
+                self.get_player_stats_from_html()
+                self.write_player_stats_to_csv()
+                self.stats = pd.read_csv(
+                    self.name+'-hiscores.csv', parse_dates=[0],
+                    names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
+            else:
+                print("Exiting...")
+                sys.exit()
+
+        return self.stats

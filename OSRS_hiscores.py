@@ -88,30 +88,7 @@ if __name__ == '__main__':
         player.write_player_stats_to_csv()
 
     # Read csv file for this player and format it
-    if os.path.exists(player.name+'-hiscores.csv'):
-        hiscores_all_time = pd.read_csv(
-            player.name+'-hiscores.csv', parse_dates=[0],
-            names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
-    else:
-        # Must not have given --update as csv file doesn't exist
-        # Ask user if they wish to update and create the csv file
-        while True:
-            user_input = input(
-                "CSV file for player %s does not exist. Would you like to create one? [y/n] " % (player.name))
-            if user_input not in ['y', 'n', 'yes', 'no']:
-                print("Please enter one of [y/n].")
-                continue
-            else:
-                break
-        if user_input == "y" or user_input == "yes":
-            player.get_player_stats_from_html()
-            player.write_player_stats_to_csv()
-            hiscores_all_time = pd.read_csv(
-                player.name+'-hiscores.csv', parse_dates=[0],
-                names=['Date', 'Skill', 'Rank', 'Level', 'XP'])
-        else:
-            print("Exiting...")
-            sys.exit()
+    hiscores_all_time = player.get_player_stats_from_csv()
 
     # Exit script after writing to csv file if user wishes
     if no_plot:
