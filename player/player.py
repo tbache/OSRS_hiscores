@@ -73,8 +73,7 @@ class Player:
 
     def get_player_stats_from_html(self):
         """
-        Fetches player stats from hiscores website and writes them
-        to csv file.
+        Fetches player stats from hiscores website.
 
         Parameters
         ----------
@@ -94,6 +93,10 @@ class Player:
         self.clean_player_stats()
 
     def write_player_stats_to_csv(self):
+        """
+        Writes player stats to a csv file (<name>-hiscores.csv).
+
+        """
         # Save current hiscores to csv file
         print(
             f"Saving current stats to CSV file: {self.name}-hiscores.csv")
