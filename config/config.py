@@ -1,5 +1,10 @@
 """
 Functions for reading and printing the config file used by OSRS_hiscores.py.
+
+Functions:
+    read_config()
+    print_config(ConfigParser)
+
 """
 
 import os.path
