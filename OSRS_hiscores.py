@@ -46,7 +46,7 @@ class Player:
     def __init__(self):
         self.stats = 0
 
-    def CleanHiscoresDataFrame(self, df):
+    def CleanHiscoresDataFrame(self):
         """
         Cleans dataframe read from hiscores website to make it human readable.
         Sets todays date and skill name as multiindex for writing to csv later.
@@ -60,21 +60,22 @@ class Player:
         df : Cleaned pandas dataframe.
         """
         # Save correct column names
-        cols = df.iloc[1][1:]
+        cols = self.stats.iloc[1][1:]
         # Drop unnecessary rows and columns
-        df.drop([0, 1, 2], inplace=True)
-        df.drop([0], axis=1, inplace=True)
+        self.stats.drop([0, 1, 2], inplace=True)
+        self.stats.drop([0], axis=1, inplace=True)
         # Set column names and index
-        df.columns = cols
-        df.set_index('Skill', inplace=True)
+        self.stats.columns = cols
+        self.stats.set_index('Skill', inplace=True)
         # Remove unnecessary row
-        df.drop('Minigame', inplace=True)
+        self.stats.drop('Minigame', inplace=True)
         # Create multiindex using todays date and skill name
-        # print(df.index)
-        index = [(datetime.now(), i) for i in df.index]
-        df.index = pd.MultiIndex.from_tuples(index, names=('Date', 'Skill'))
-        df = df.astype(np.int64)
-        return df
+        # print(self.stats.index)
+        index = [(datetime.now(), i) for i in self.stats.index]
+        self.stats.index = pd.MultiIndex.from_tuples(
+            index, names=('Date', 'Skill'))
+        self.stats = self.stats.astype(np.int64)
+        # return df
 
     def GetPlayerStats(self, player):
         """
@@ -96,7 +97,7 @@ class Player:
         hiscores = pd.read_html(webpage)[2]
 
         # Clean dataframe
-        hiscores = CleanHiscoresDataFrame(hiscores)
+        hiscores = hiscores.CleanHiscoresDataFrame()
 
         # Save current hiscores to csv file
         print("Saving current stats to CSV file:", player+'-hiscores.csv')
