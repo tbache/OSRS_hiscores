@@ -52,7 +52,7 @@ if __name__ == '__main__':
         print("Exiting without plotting.")
         sys.exit()
 
-    # Split overall stats into "skills" and "killcount"
+    # Separate overall stats into "skills" and "killcount"
     player.extract_skills()
     player.extract_killcount_and_total()
 
