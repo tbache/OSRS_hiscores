@@ -38,7 +38,7 @@ class Player:
     def __init__(self):
         self.name = ""
         self.update = False
-        self.stats = 0
+        self.stats = None
 
     def clean_player_stats(self):
         """
