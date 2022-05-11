@@ -22,15 +22,23 @@ class Player:
 
     Attributes
     ----------
-    stats : pandas dataframe
+    name: player name being analysed
+    update: whether stats in csv file should be updated from hiscores
+    stats : pandas dataframe containing player's stats
 
     Methods
     -------
-
+    clean_player_stats():
+        Cleans dataframe read from hiscores website.
+    get_player_stats_from_html():
+        Reads dataframe from hiscores website.
+    write_player_stats_to_csv():
+        Writes player stats to a csv file.
+    get_player_stats_from_csv():
+        Reads player stats from a csv file.
 
     TODO:
-        Add setters and getters
-        Update class docs and module docs
+        Update and module docs
         Replace hiscores_all_time with player.stats.
 
     """
