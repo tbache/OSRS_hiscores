@@ -27,62 +27,80 @@ from config.config import read_config, print_config
 plt.style.use('ggplot')
 
 
-def CleanHiscoresDataFrame(df):
+class Player:
     """
-    Cleans dataframe read from hiscores website to make it human readable.
-    Sets todays date and skill name as multiindex for writing to csv later.
+    Obtains, cleans and holds the players stats.
 
-    Parameters
+    ...
+
+    Attributes
     ----------
-    df : Pandas dataframe to be cleaned.
+    stats : pandas dataframe
 
-    Returns
+    Methods
     -------
-    df : Cleaned pandas dataframe.
+
+
     """
-    # Save correct column names
-    cols = df.iloc[1][1:]
-    # Drop unnecessary rows and columns
-    df.drop([0, 1, 2], inplace=True)
-    df.drop([0], axis=1, inplace=True)
-    # Set column names and index
-    df.columns = cols
-    df.set_index('Skill', inplace=True)
-    # Remove unnecessary row
-    df.drop('Minigame', inplace=True)
-    # Create multiindex using todays date and skill name
-    # print(df.index)
-    index = [(datetime.now(), i) for i in df.index]
-    df.index = pd.MultiIndex.from_tuples(index, names=('Date', 'Skill'))
-    df = df.astype(np.int64)
-    return df
 
+    def __init__(self):
+        self.stats = 0
 
-def GetPlayerStats(player):
-    """
-    Fetches player stats from hiscores website and writes them
-    to csv file.
+    def CleanHiscoresDataFrame(self, df):
+        """
+        Cleans dataframe read from hiscores website to make it human readable.
+        Sets todays date and skill name as multiindex for writing to csv later.
 
-    Parameters
-    ----------
-    player : string
-        Player username.
-    """
-    # Read players current stats from OSRS hiscores
-    page_name = 'https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1='+player
-    req = Request(page_name, headers={'User-Agent': 'Mozilla/5.0'})
-    webpage = urlopen(req).read()
-    if "No player" in str(webpage):
-        print("No player with name %s found. Exiting..." % (player))
-        sys.exit()
-    hiscores = pd.read_html(webpage)[2]
+        Parameters
+        ----------
+        df : Pandas dataframe to be cleaned.
 
-    # Clean dataframe
-    hiscores = CleanHiscoresDataFrame(hiscores)
+        Returns
+        -------
+        df : Cleaned pandas dataframe.
+        """
+        # Save correct column names
+        cols = df.iloc[1][1:]
+        # Drop unnecessary rows and columns
+        df.drop([0, 1, 2], inplace=True)
+        df.drop([0], axis=1, inplace=True)
+        # Set column names and index
+        df.columns = cols
+        df.set_index('Skill', inplace=True)
+        # Remove unnecessary row
+        df.drop('Minigame', inplace=True)
+        # Create multiindex using todays date and skill name
+        # print(df.index)
+        index = [(datetime.now(), i) for i in df.index]
+        df.index = pd.MultiIndex.from_tuples(index, names=('Date', 'Skill'))
+        df = df.astype(np.int64)
+        return df
 
-    # Save current hiscores to csv file
-    print("Saving current stats to CSV file:", player+'-hiscores.csv')
-    hiscores.to_csv(player+'-hiscores.csv', mode='a', header=False)
+    def GetPlayerStats(self, player):
+        """
+        Fetches player stats from hiscores website and writes them
+        to csv file.
+
+        Parameters
+        ----------
+        player : string
+            Player username.
+            """
+        # Read players current stats from OSRS hiscores
+        page_name = 'https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1='+player
+        req = Request(page_name, headers={'User-Agent': 'Mozilla/5.0'})
+        webpage = urlopen(req).read()
+        if "No player" in str(webpage):
+            print("No player with name %s found. Exiting..." % (player))
+            sys.exit()
+        hiscores = pd.read_html(webpage)[2]
+
+        # Clean dataframe
+        hiscores = CleanHiscoresDataFrame(hiscores)
+
+        # Save current hiscores to csv file
+        print("Saving current stats to CSV file:", player+'-hiscores.csv')
+        hiscores.to_csv(player+'-hiscores.csv', mode='a', header=False)
 
 
 def RotateTickLabels(fig):
