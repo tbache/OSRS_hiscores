@@ -7,12 +7,11 @@ Created on 14 April 2022
 @author: Tom Bache
 """
 
-import argparse
 import sys
 import matplotlib.pyplot as plt
 
 # Own packages
-from config.config import read_config, print_config
+from config.config import read_config, parse_cl, print_config
 from player.player import Player
 import plotting
 
@@ -25,29 +24,9 @@ if __name__ == '__main__':
     # Read config file
     config = read_config()
 
-    # Parse CL arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--player',
-        help='Name of the player whose stats are to be fetched.')
-    parser.add_argument(
-        '--update', action='store_true', default=False,
-        help='Will fetch stats from hiscores.')
-    parser.add_argument(
-        '--no_plot', action='store_true', default=False,
-        help='If given, only update the stats and do not plot.')
-    args = parser.parse_args()
-
-    # Overwrite config file option if given on command line
-    if args.player:
-        config['PlayerSettings']['player'] = str(args.player)
-    if args.update:
-        config['PlayerSettings']['update'] = 'True'
-    if args.no_plot or config['PlayerSettings'].getboolean('no_plot'):
-        config['PlotSettings']['no_plot'] = 'True'
-        # If no_plot=True, also overwrite update
-        args.update = True
-        config['PlayerSettings']['update'] = 'True'
+    # Parse command line arguments and overwrite config file option if option
+    # given on command line
+    config = parse_cl(config)
 
     # Print config options
     print_config(config)
