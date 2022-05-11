@@ -93,7 +93,7 @@ class Player:
         # Clean dataframe
         self.clean_player_stats()
 
-    def write_player_stats(self):
+    def write_player_stats_to_csv(self):
         # Save current hiscores to csv file
         print(
             f"Saving current stats to CSV file: {self.name}-hiscores.csv")
