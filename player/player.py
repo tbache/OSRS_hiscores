@@ -30,17 +30,33 @@ class Player:
 
     TODO:
         Add setters and getters
-        Update docs
-        Split GetPlayerStats into Get and Write
+        Update class docs and module docs
         Replace hiscores_all_time with player.stats.
 
     """
 
     def __init__(self):
-        self.name = ""
-        self.update = False
-        self.stats = None
+        self.__name = ""
+        self.__update = False
+        self.__stats = None
 
+    # Getters
+    @property
+    def name(self): return self.__name
+    @property
+    def update(self): return self.__update
+    @property
+    def stats(self): return self.__stats
+
+    # Setters
+    @name.setter
+    def name(self, value): self.__name = value
+    @update.setter
+    def update(self, value): self.__update = value
+    @stats.setter
+    def stats(self, value): self.__stats = value
+
+    # Methods
     def clean_player_stats(self):
         """
         Cleans dataframe read from hiscores website to make it human readable.
